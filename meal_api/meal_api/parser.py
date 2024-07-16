@@ -42,14 +42,23 @@ def get_card(total=10):
 
                 title = card.find('td', class_='padding_l padding_r').find('h1', class_='title').text
                 products = card.find('table', class_='ingr').find_all('tr')
-                products_list = [product.find_next('td', class_='padding_l padding_r').text.strip() + '\n' for product in products]
+                products_list = [product.find_next('td', class_='padding_l padding_r').text.strip() for product in products]
                 steps = card.find_all('div', class_='step_n')
                 steps_descriptions = ["-" + step.find('p').text.strip() for step in steps]
                 steps_images = ['https:' + step.find('a').get('href') for step in steps]
                 steps_dict = {step: image for step, image in zip(steps_descriptions, steps_images)}
+
                 title_info = card.find_all('span', class_='hl')
-                portions = title_info[0].find('b').text
-                cooking_time = title_info[1].find('b').text #TODO: Доработать время!(Вывод полного времени)
+                if title_info is not None:
+                    if len(title_info) > 0:
+                        portions = title_info[0].find('b').text
+                    else:
+                        portions = None
+                    if len(title_info) > 1:
+                        cooking_time = title_info[1].get_text()
+                    else:
+                        cooking_time = None
+
                 author_url = base_url + card.find('div', class_='sub_info').find('div', class_='el user_date').find('a').get('href')
                 author = card.find('div', class_='sub_info').find('div', class_='el user_date').find('a').text
                 time.sleep(random.uniform(1, 5))
